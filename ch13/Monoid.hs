@@ -1,4 +1,14 @@
 -- file: ch13/Monoid.hs
+class Monoid a where
+    mempty  :: a                -- the identity
+    mappend :: a -> a -> a      -- associative binary operator
+
+-- file: ch13/Monoid.hs
+instance Monoid [a] where
+    mempty  = []
+    mappend = (++)
+
+-- file: ch13/Monoid.hs
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
                    
 newtype AInt = A { unA :: Int }
@@ -15,10 +25,4 @@ newtype MInt = M { unM :: Int }
 -- monoid under multiplication
 instance Monoid MInt where
     mempty = 1
-    mappend = (*)-- file: ch13/Monoid.hs
-instance Monoid [a] where
-    mempty  = []
-    mappend = (++)-- file: ch13/Monoid.hs
-class Monoid a where
-    mempty  :: a                -- the identity
-    mappend :: a -> a -> a      -- associative binary operator
+    mappend = (*)

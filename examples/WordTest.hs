@@ -1,4 +1,29 @@
 -- file: examples/WordTest.hs
+module Main where
+
+import Control.Parallel.Strategies (NFData(..))
+import Control.Monad (forM_, mapM_)
+import qualified BloomFilter.Easy as B
+import qualified Data.ByteString.Char8 as BS
+import Data.Time.Clock (diffUTCTime, getCurrentTime)
+import System.Environment (getArgs)
+import System.Exit (exitFailure)
+
+timed :: (NFData a) => String -> IO a -> IO a
+timed desc act = do
+    start <- getCurrentTime
+    ret <- act
+    end <- rnf ret `seq` getCurrentTime
+    putStrLn $ show (diffUTCTime end start) ++ " to " ++ desc
+    return ret
+
+instance NFData BS.ByteString where
+    rnf _ = ()
+
+instance NFData (B.Bloom a) where
+    rnf filt = B.length filt `seq` ()
+
+-- file: examples/WordTest.hs
 main = do
   args <- getArgs
   let files | null args = ["/usr/share/dict/words"]
@@ -23,27 +48,4 @@ main = do
         Right filt -> return filt
 
     timed "query every element" $
-      mapM_ print $ filter (not . (`B.elem` filt)) words-- file: examples/WordTest.hs
-module Main where
-
-import Control.Parallel.Strategies (NFData(..))
-import Control.Monad (forM_, mapM_)
-import qualified BloomFilter.Easy as B
-import qualified Data.ByteString.Char8 as BS
-import Data.Time.Clock (diffUTCTime, getCurrentTime)
-import System.Environment (getArgs)
-import System.Exit (exitFailure)
-
-timed :: (NFData a) => String -> IO a -> IO a
-timed desc act = do
-    start <- getCurrentTime
-    ret <- act
-    end <- rnf ret `seq` getCurrentTime
-    putStrLn $ show (diffUTCTime end start) ++ " to " ++ desc
-    return ret
-
-instance NFData BS.ByteString where
-    rnf _ = ()
-
-instance NFData (B.Bloom a) where
-    rnf filt = B.length filt `seq` ()
+      mapM_ print $ filter (not . (`B.elem` filt)) words

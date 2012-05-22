@@ -1,13 +1,4 @@
 -- file: ch26/BloomFilter.hs
-fromList :: (a -> [Word32])    -- family of hash functions to use
-         -> Word32             -- number of bits in filter
-         -> [a]                -- values to populate with
-         -> Bloom a
-fromList hash numBits values =
-    B hash . runSTUArray $
-      do mb <- new hash numBits
-         mapM_ (insert mb) values
-         return (mutArray mb)-- file: ch26/BloomFilter.hs
 module BloomFilter
     (
       Bloom
@@ -36,3 +27,14 @@ elt `elem` filt   = all test (blmHash filt elt)
 
 notElem :: a -> Bloom a -> Bool
 elt `notElem` filt = not (elt `elem` filt)
+
+-- file: ch26/BloomFilter.hs
+fromList :: (a -> [Word32])    -- family of hash functions to use
+         -> Word32             -- number of bits in filter
+         -> [a]                -- values to populate with
+         -> Bloom a
+fromList hash numBits values =
+    B hash . runSTUArray $
+      do mb <- new hash numBits
+         mapM_ (insert mb) values
+         return (mutArray mb)

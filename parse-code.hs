@@ -52,9 +52,9 @@ parsePage :: BS.ByteString -> [(String, BS.ByteString)]
 parsePage page = Map.foldrWithKey (\f c xs -> clear f c:xs) [] files
     where codes = filter hasFileName (parseCode page)
           fnames = map parseFileName codes
-          codes' = groupBy
           addToMap :: (BS.ByteString,BS.ByteString) -> Map.Map BS.ByteString BS.ByteString -> Map.Map BS.ByteString BS.ByteString
-          addToMap (f,c) = Map.insertWith (flip BS.append) f c
+          append' e n = e `BS.append` (BS.pack "\n\n") `BS.append` n
+          addToMap (f,c) = Map.insertWith append' f c
           emptyMap = Map.empty :: Map.Map BS.ByteString BS.ByteString
           files = foldr addToMap emptyMap (zip fnames codes)
           clear f c = (BS.unpack f, unescape c `BS.append` BS.pack "\n")

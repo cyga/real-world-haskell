@@ -1,4 +1,13 @@
 -- file: ch06/naiveeq.hs
+data Color = Red | Green | Blue
+
+colorEq :: Color -> Color -> Bool
+colorEq Red   Red   = True
+colorEq Green Green = True
+colorEq Blue  Blue  = True
+colorEq _     _     = False
+
+-- file: ch06/naiveeq.hs
 stringEq :: [Char] -> [Char] -> Bool
 
 -- Match if both are empty
@@ -8,11 +17,4 @@ stringEq [] [] = True
 stringEq (x:xs) (y:ys) = x == y && stringEq xs ys
 
 -- Everything else doesn't match
-stringEq _ _ = False-- file: ch06/naiveeq.hs
-data Color = Red | Green | Blue
-
-colorEq :: Color -> Color -> Bool
-colorEq Red   Red   = True
-colorEq Green Green = True
-colorEq Blue  Blue  = True
-colorEq _     _     = False
+stringEq _ _ = False

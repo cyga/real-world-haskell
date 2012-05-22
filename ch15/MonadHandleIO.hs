@@ -1,16 +1,4 @@
 -- file: ch15/MonadHandleIO.hs
-tidyHello :: (MonadIO m, MonadHandle h m) => FilePath -> m ()
-tidyHello path = do
-  safeHello path
-  liftIO (removeFile path)-- file: ch15/MonadHandleIO.hs
-class (MonadHandle h m, MonadIO m) => MonadHandleIO h m | m -> h
-
-instance MonadHandleIO System.IO.Handle IO
-
-tidierHello :: (MonadHandleIO h m) => FilePath -> m ()
-tidierHello path = do
-  safeHello path
-  liftIO (removeFile path)-- file: ch15/MonadHandleIO.hs
 {-# LANGUAGE FunctionalDependencies, MultiParamTypeClasses #-}
 
 import MonadHandle
@@ -28,3 +16,19 @@ instance MonadHandle System.IO.Handle IO where
     hClose = System.IO.hClose
     hGetContents = System.IO.hGetContents
     hPutStrLn = System.IO.hPutStrLn
+
+-- file: ch15/MonadHandleIO.hs
+class (MonadHandle h m, MonadIO m) => MonadHandleIO h m | m -> h
+
+instance MonadHandleIO System.IO.Handle IO
+
+tidierHello :: (MonadHandleIO h m) => FilePath -> m ()
+tidierHello path = do
+  safeHello path
+  liftIO (removeFile path)
+
+-- file: ch15/MonadHandleIO.hs
+tidyHello :: (MonadIO m, MonadHandle h m) => FilePath -> m ()
+tidyHello path = do
+  safeHello path
+  liftIO (removeFile path)

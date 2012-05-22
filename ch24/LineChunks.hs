@@ -1,36 +1,4 @@
 -- file: ch24/LineChunks.hs
-lineChunks :: Int -> FilePath -> IO [ChunkSpec]
-lineChunks numChunks path = do
-  bracket (openFile path ReadMode) hClose $ \h -> do
-    totalSize <- fromIntegral `liftM` hFileSize h
-    let chunkSize = totalSize `div` fromIntegral numChunks
-        findChunks offset = do
-          let newOffset = offset + chunkSize
-          hSeek h AbsoluteSeek (fromIntegral newOffset)
-          let findNewline off = do
-                eof <- hIsEOF h
-                if eof
-                  then return [CS offset (totalSize - offset)]
-                  else do
-                    bytes <- LB.hGet h 4096
-                    case LB.elemIndex '\n' bytes of
-                      Just n -> do
-                        chunks@(c:_) <- findChunks (off + n + 1)
-                        let coff = chunkOffset c
-                        return (CS offset (coff - offset):chunks)
-                      Nothing -> findNewline (off + LB.length bytes)
-          findNewline newOffset
-    findChunks 0-- file: ch24/LineChunks.hs
-chunkedRead :: (FilePath -> IO [ChunkSpec])
-            -> FilePath
-            -> IO ([LB.ByteString], [Handle])
-chunkedRead chunkFunc path = do
-  chunks <- chunkFunc path
-  liftM unzip . forM chunks $ \spec -> do
-    h <- openFile path ReadMode
-    hSeek h AbsoluteSeek (fromIntegral (chunkOffset spec))
-    chunk <- LB.take (chunkLength spec) `liftM` LB.hGetContents h
-    return (chunk, h)-- file: ch24/LineChunks.hs
 module LineChunks
     (
       chunkedReadWith
@@ -63,3 +31,39 @@ chunkedReadWith :: (NFData a) =>
                    ([LB.ByteString] -> a) -> FilePath -> IO a
 chunkedReadWith func path =
     withChunks (lineChunks (numCapabilities * 4)) func path
+
+-- file: ch24/LineChunks.hs
+chunkedRead :: (FilePath -> IO [ChunkSpec])
+            -> FilePath
+            -> IO ([LB.ByteString], [Handle])
+chunkedRead chunkFunc path = do
+  chunks <- chunkFunc path
+  liftM unzip . forM chunks $ \spec -> do
+    h <- openFile path ReadMode
+    hSeek h AbsoluteSeek (fromIntegral (chunkOffset spec))
+    chunk <- LB.take (chunkLength spec) `liftM` LB.hGetContents h
+    return (chunk, h)
+
+-- file: ch24/LineChunks.hs
+lineChunks :: Int -> FilePath -> IO [ChunkSpec]
+lineChunks numChunks path = do
+  bracket (openFile path ReadMode) hClose $ \h -> do
+    totalSize <- fromIntegral `liftM` hFileSize h
+    let chunkSize = totalSize `div` fromIntegral numChunks
+        findChunks offset = do
+          let newOffset = offset + chunkSize
+          hSeek h AbsoluteSeek (fromIntegral newOffset)
+          let findNewline off = do
+                eof <- hIsEOF h
+                if eof
+                  then return [CS offset (totalSize - offset)]
+                  else do
+                    bytes <- LB.hGet h 4096
+                    case LB.elemIndex '\n' bytes of
+                      Just n -> do
+                        chunks@(c:_) <- findChunks (off + n + 1)
+                        let coff = chunkOffset c
+                        return (CS offset (coff - offset):chunks)
+                      Nothing -> findNewline (off + LB.length bytes)
+          findNewline newOffset
+    findChunks 0

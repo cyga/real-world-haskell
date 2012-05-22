@@ -1,21 +1,12 @@
 -- file: ch09/FoldDir.hs
-countDirectories count info =
-    Continue (if isDirectory info
-              then count + 1
-              else count)-- file: ch09/FoldDir.hs
-atMostThreePictures :: Iterator [FilePath]
+data Iterate seed = Done     { unwrap :: seed }
+                  | Skip     { unwrap :: seed }
+                  | Continue { unwrap :: seed }
+                    deriving (Show)
 
-atMostThreePictures paths info
-    | length paths == 3
-      = Done paths
-    | isDirectory info && takeFileName path == ".svn"
-      = Skip paths
-    | extension `elem` [".jpg", ".png"]
-      = Continue (path : paths)
-    | otherwise
-      = Continue paths
-  where extension = map toLower (takeExtension path)
-        path = infoPath info-- file: ch09/FoldDir.hs
+type Iterator seed = seed -> Info -> Iterate seed
+
+-- file: ch09/FoldDir.hs
 foldTree :: Iterator a -> a -> FilePath -> IO a
 
 foldTree iter initSeed path = do
@@ -37,10 +28,25 @@ foldTree iter initSeed path = do
                 done@(Done _) -> return done
                 seed''        -> walk (unwrap seed'') names
           | otherwise -> walk seed' names
-    walk seed _ = return (Continue seed)-- file: ch09/FoldDir.hs
-data Iterate seed = Done     { unwrap :: seed }
-                  | Skip     { unwrap :: seed }
-                  | Continue { unwrap :: seed }
-                    deriving (Show)
+    walk seed _ = return (Continue seed)
 
-type Iterator seed = seed -> Info -> Iterate seed
+-- file: ch09/FoldDir.hs
+atMostThreePictures :: Iterator [FilePath]
+
+atMostThreePictures paths info
+    | length paths == 3
+      = Done paths
+    | isDirectory info && takeFileName path == ".svn"
+      = Skip paths
+    | extension `elem` [".jpg", ".png"]
+      = Continue (path : paths)
+    | otherwise
+      = Continue paths
+  where extension = map toLower (takeExtension path)
+        path = infoPath info
+
+-- file: ch09/FoldDir.hs
+countDirectories count info =
+    Continue (if isDirectory info
+              then count + 1
+              else count)

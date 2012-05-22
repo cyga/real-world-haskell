@@ -1,19 +1,31 @@
 -- file: ch18/UglyStack.hs
-explicitGet :: App AppState
-explicitGet = lift get-- file: ch18/UglyStack.hs
-implicitGet :: App AppState
-implicitGet = get-- file: ch18/UglyStack.hs
-type App = ReaderT AppConfig (StateT AppState IO)-- file: ch18/UglyStack.hs
-newtype MyApp a = MyA {
-      runA :: ReaderT AppConfig (StateT AppState IO) a
-    } deriving (Monad, MonadIO, MonadReader AppConfig,
-                MonadState AppState)
+import System.Directory
+import System.FilePath
+import Control.Monad.Reader
+import Control.Monad.State
 
-runMyApp :: MyApp a -> Int -> IO (a, AppState)
-runMyApp k maxDepth =
+data AppConfig = AppConfig {
+      cfgMaxDepth :: Int
+    } deriving (Show)
+
+data AppState = AppState {
+      stDeepestReached :: Int
+    } deriving (Show)
+
+-- file: ch18/UglyStack.hs
+type App = ReaderT AppConfig (StateT AppState IO)
+
+-- file: ch18/UglyStack.hs
+type App2 a = ReaderT AppConfig (StateT AppState IO) a
+
+-- file: ch18/UglyStack.hs
+runApp :: App a -> Int -> IO (a, AppState)
+runApp k maxDepth =
     let config = AppConfig maxDepth
         state = AppState 0
-    in runStateT (runReaderT (runA k) config) state-- file: ch18/UglyStack.hs
+    in runStateT (runReaderT k config) state
+
+-- file: ch18/UglyStack.hs
 constrainedCount :: Int -> FilePath -> App [(FilePath, Int)]
 constrainedCount curDepth path = do
   contents <- liftIO . listDirectory $ path
@@ -29,23 +41,27 @@ constrainedCount curDepth path = do
                   put st { stDeepestReached = newDepth }
                 constrainedCount newDepth newPath
               else return []
-  return $ (path, length contents) : concat rest-- file: ch18/UglyStack.hs
-runApp :: App a -> Int -> IO (a, AppState)
-runApp k maxDepth =
+  return $ (path, length contents) : concat rest
+
+-- file: ch18/UglyStack.hs
+newtype MyApp a = MyA {
+      runA :: ReaderT AppConfig (StateT AppState IO) a
+    } deriving (Monad, MonadIO, MonadReader AppConfig,
+                MonadState AppState)
+
+runMyApp :: MyApp a -> Int -> IO (a, AppState)
+runMyApp k maxDepth =
     let config = AppConfig maxDepth
         state = AppState 0
-    in runStateT (runReaderT k config) state-- file: ch18/UglyStack.hs
-type App2 a = ReaderT AppConfig (StateT AppState IO) a-- file: ch18/UglyStack.hs
-type App = ReaderT AppConfig (StateT AppState IO)-- file: ch18/UglyStack.hs
-import System.Directory
-import System.FilePath
-import Control.Monad.Reader
-import Control.Monad.State
+    in runStateT (runReaderT (runA k) config) state
 
-data AppConfig = AppConfig {
-      cfgMaxDepth :: Int
-    } deriving (Show)
+-- file: ch18/UglyStack.hs
+type App = ReaderT AppConfig (StateT AppState IO)
 
-data AppState = AppState {
-      stDeepestReached :: Int
-    } deriving (Show)
+-- file: ch18/UglyStack.hs
+implicitGet :: App AppState
+implicitGet = get
+
+-- file: ch18/UglyStack.hs
+explicitGet :: App AppState
+explicitGet = lift get

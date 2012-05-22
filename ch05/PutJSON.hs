@@ -1,6 +1,4 @@
 -- file: ch05/PutJSON.hs
-putJValue :: JValue -> IO ()
-putJValue v = putStrLn (renderJValue v)-- file: ch05/PutJSON.hs
 module PutJSON where
 
 import Data.List (intercalate)
@@ -22,3 +20,7 @@ renderJValue (JObject o) = "{" ++ pairs o ++ "}"
 renderJValue (JArray a) = "[" ++ values a ++ "]"
   where values [] = ""
         values vs = intercalate ", " (map renderJValue vs)
+
+-- file: ch05/PutJSON.hs
+putJValue :: JValue -> IO ()
+putJValue v = putStrLn (renderJValue v)

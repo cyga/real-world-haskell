@@ -1,6 +1,7 @@
 -- file: ch04/SplitLines.hs
-fixLines :: String -> String
-fixLines input = unlines (splitLines input)-- file: ch04/SplitLines.hs
+splitLines :: String -> [String]
+
+-- file: ch04/SplitLines.hs
 splitLines [] = []
 splitLines cs =
     let (pre, suf) = break isLineTerminator cs
@@ -10,5 +11,8 @@ splitLines cs =
                 ('\n':rest)      -> splitLines rest
                 _                -> []
 
-isLineTerminator c = c == '\r' || c == '\n'-- file: ch04/SplitLines.hs
-splitLines :: String -> [String]
+isLineTerminator c = c == '\r' || c == '\n'
+
+-- file: ch04/SplitLines.hs
+fixLines :: String -> String
+fixLines input = unlines (splitLines input)

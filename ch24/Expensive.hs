@@ -1,9 +1,4 @@
 -- file: ch24/Expensive.hs
-expensiveComputation mv = do
-  let a = "this is "
-      b = "not really "
-      c = "all that expensive"
-  putMVar mv (a ++ b ++ c)-- file: ch24/Expensive.hs
 import Control.Concurrent
 
 notQuiteRight = do
@@ -12,3 +7,10 @@ notQuiteRight = do
   someOtherActivity
   result <- takeMVar mv
   print result
+
+-- file: ch24/Expensive.hs
+expensiveComputation mv = do
+  let a = "this is "
+      b = "not really "
+      c = "all that expensive"
+  putMVar mv (a ++ b ++ c)
