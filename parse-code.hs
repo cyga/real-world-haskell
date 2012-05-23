@@ -61,7 +61,7 @@ parsePage page = Map.foldrWithKey (\f c xs -> clear f c:xs) [] files
 
 parseCode :: BS.ByteString -> [BS.ByteString]
 parseCode html = map (!! 1) matches
-    --pcre is buggy with String
+    -- “ - is the problem, use ByteString instead of String
     where re = "<pre\\s+id\\s*=\\s*\".+?\"\\s+class\\s*=\\s*\"programlisting\"\\s*>([\\w\\W]*?)</pre>"
           matches = html =~ re :: [[BS.ByteString]]
 
