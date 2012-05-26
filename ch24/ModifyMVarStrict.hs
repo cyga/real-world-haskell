@@ -2,8 +2,8 @@
 {-# LANGUAGE BangPatterns #-}
 
 import Control.Concurrent (MVar, putMVar, takeMVar)
-import Control.Exception (block, catch, throw, unblock)
-import Prelude hiding (catch) -- use Control.Exception's version
+import Control.OldException (block, catch, throw, unblock)
+import Prelude hiding (catch) -- use Control.OldException's version
 
 modifyMVar_strict :: MVar a -> (a -> IO a) -> IO ()
 modifyMVar_strict m io = block $ do

@@ -1,7 +1,7 @@
 -- file: ch24/ModifyMVar.hs
 import Control.Concurrent (MVar, putMVar, takeMVar)
-import Control.Exception (block, catch, throw, unblock)
-import Prelude hiding (catch) -- use Control.Exception's version
+import Control.OldException (block, catch, throw, unblock)
+import Prelude hiding (catch) -- use Control.OldException's version
 
 modifyMVar :: MVar a -> (a -> IO (a,b)) -> IO b
 modifyMVar m io = 

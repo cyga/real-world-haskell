@@ -1,5 +1,5 @@
 -- file: ch19/hj1.hs
-import Control.Exception
+import Control.OldException
 
 catchIt :: Exception -> Maybe ()
 catchIt (ArithException DivideByZero) = Just ()

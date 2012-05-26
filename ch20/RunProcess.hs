@@ -6,7 +6,7 @@ module RunProcess where
 import System.Process
 import Control.Concurrent
 import Control.Concurrent.MVar
-import Control.Exception(evaluate)
+import Control.OldException(evaluate)
 import System.Posix.Directory
 import System.Directory(setCurrentDirectory)
 import System.IO

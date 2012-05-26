@@ -2,7 +2,7 @@
 import System.IO
 import System.Directory(getTemporaryDirectory, removeFile)
 import System.IO.Error(catch)
-import Control.Exception(finally)
+import Control.OldException(finally)
 
 -- The main entry point.  Work with a temp file in myAction.
 main :: IO ()

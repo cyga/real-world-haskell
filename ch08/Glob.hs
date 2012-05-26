@@ -9,7 +9,7 @@ import System.Directory (doesDirectoryExist, doesFileExist,
 import System.FilePath (dropTrailingPathSeparator, splitFileName, (</>))
 
 -- file: ch08/Glob.hs
-import Control.Exception (handle)
+import Control.OldException (handle)
 import Control.Monad (forM)
 import GlobRegex (matchesGlob)
 

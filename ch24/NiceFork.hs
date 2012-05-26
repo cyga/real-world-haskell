@@ -1,6 +1,6 @@
 -- file: ch24/NiceFork.hs
 import Control.Concurrent
-import Control.Exception (Exception, try)
+import Control.OldException (Exception, try)
 import qualified Data.Map as M
 
 data ThreadStatus = Running

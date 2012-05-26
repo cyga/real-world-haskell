@@ -1,7 +1,6 @@
 -- file: ch24/Compressor.hs
 import Control.Concurrent (forkIO)
--- check out CompressorNew.hs for new code:
-import Control.OldException (handle)
+import Control.OldException (handle, SomeException)
 import Control.Monad (forever)
 import qualified Data.ByteString.Lazy as L
 import System.Console.Readline (readline)
@@ -15,7 +14,7 @@ main = do
       Nothing -> return ()      -- user entered EOF
       Just "" -> return ()      -- treat no name as "want to quit"
       Just name -> do
-           handle print $ do
+           handle (print :: SomeException -> IO ()) $ do
              content <- L.readFile name
              forkIO (compressFile name content)
              return ()

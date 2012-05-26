@@ -4,7 +4,7 @@ module LineChunks
       chunkedReadWith
     ) where
 
-import Control.Exception (bracket, finally)
+import Control.OldException (bracket, finally)
 import Control.Monad (forM, liftM)
 import Control.Parallel.Strategies (NFData, rnf)
 import Data.Int (Int64)

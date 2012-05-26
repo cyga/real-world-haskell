@@ -4,7 +4,7 @@
 
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM
-import Control.Exception (catch, finally)
+import Control.OldException (catch, finally)
 import Control.Monad.Error
 import Control.Monad.State
 import Data.Char (isControl)

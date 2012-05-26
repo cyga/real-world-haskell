@@ -2,7 +2,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
 import Data.Dynamic
-import Control.Exception
+import Control.OldException
 
 data SqlError = SqlError {seState :: String,
                           seNativeError :: Int,

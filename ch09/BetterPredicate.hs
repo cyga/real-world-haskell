@@ -3,7 +3,7 @@ import Control.Monad (filterM)
 import System.Directory (Permissions(..), getModificationTime, getPermissions)
 import System.Time (ClockTime(..))
 import System.FilePath (takeExtension)
-import Control.Exception (bracket, handle)
+import Control.OldException (bracket, handle)
 import System.IO (IOMode(..), hClose, hFileSize, openFile)
 
 -- the function we wrote earlier
