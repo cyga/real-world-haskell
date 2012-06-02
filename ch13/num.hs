@@ -1,3 +1,4 @@
+{-# LANGUAGE DatatypeContexts #-}
 -- file: ch13/num.hs
 import Data.List
 
@@ -117,7 +118,7 @@ rpnShow i =
 
 -- file: ch13/num.hs
 {- Perform some basic algebraic simplifications on a SymbolicManip. -}
-simplify :: (Num a) => SymbolicManip a -> SymbolicManip a
+simplify :: (Num a, Eq a) => SymbolicManip a -> SymbolicManip a
 simplify (BinaryArith op ia ib) = 
     let sa = simplify ia
         sb = simplify ib
@@ -139,7 +140,8 @@ simplify x = x
 {- New data type: Units.  A Units type contains a number
 and a SymbolicManip, which represents the units of measure.
 A simple label would be something like (Symbol "m") -}
-data Num a => Units a = Units a (SymbolicManip a)
+--data Num a => Units a = Units a (SymbolicManip a)
+data Units a = Units a (SymbolicManip a)
            deriving (Eq)
 
 -- file: ch13/num.hs
@@ -147,7 +149,7 @@ data Num a => Units a = Units a (SymbolicManip a)
 arbitrary units, so we generate an error if we try to add numbers with
 different units.  For multiplication, generate the appropriate
 new units. -}
-instance (Num a) => Num (Units a) where
+instance (Num a, Eq a) => Num (Units a) where
     (Units xa ua) + (Units xb ub) 
         | ua == ub = Units (xa + xb) ua
         | otherwise = error "Mis-matched units in add or subtract"
@@ -160,7 +162,7 @@ instance (Num a) => Num (Units a) where
 
 -- file: ch13/num.hs
 {- Make Units an instance of Fractional -}
-instance (Fractional a) => Fractional (Units a) where
+instance (Fractional a, Eq a) => Fractional (Units a) where
     (Units xa ua) / (Units xb ub) = Units (xa / xb) (ua / ub)
     recip a = 1 / a
     fromRational r = Units (fromRational r) (Number 1)
@@ -169,7 +171,7 @@ instance (Fractional a) => Fractional (Units a) where
 
 Use some intelligence for angle calculations: support deg and rad
 -}
-instance (Floating a) => Floating (Units a) where
+instance (Floating a, Eq a) => Floating (Units a) where
     pi = (Units pi (Number 1))
     exp _ = error "exp not yet implemented in Units"
     log _ = error "log not yet implemented in Units"
@@ -222,7 +224,7 @@ rad2deg x = 360 * x / (2 * pi)
 -- file: ch13/num.hs
 {- Showing units: we show the numeric component, an underscore,
 then the prettyShow version of the simplified units -}
-instance (Show a, Num a) => Show (Units a) where
+instance (Show a, Num a, Eq a) => Show (Units a) where
     show (Units xa ua) = show xa ++ "_" ++ prettyShow (simplify ua)
 
 -- file: ch13/num.hs
