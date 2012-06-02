@@ -1,6 +1,18 @@
 -- file: ch24/NiceFork.hs
+module NiceFork
+    (
+      ThreadManager
+    , newManager
+    , forkManaged
+    , getStatus
+    , waitFor
+    , waitAll
+    ) where
+
+-- file: ch24/NiceFork.hs
 import Control.Concurrent
 import Control.OldException (Exception, try)
+import Control.Monad (join)
 import qualified Data.Map as M
 
 data ThreadStatus = Running
@@ -22,17 +34,6 @@ waitFor :: ThreadManager -> ThreadId -> IO (Maybe ThreadStatus)
 
 -- | Block until all managed threads terminate.
 waitAll :: ThreadManager -> IO ()
-
--- file: ch24/NiceFork.hs
-module NiceFork
-    (
-      ThreadManager
-    , newManager
-    , forkManaged
-    , getStatus
-    , waitFor
-    , waitAll
-    ) where
 
 -- file: ch24/NiceFork.hs
 newtype ThreadManager =
